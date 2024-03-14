@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">3175_Lec9_DBDemo</string>
+    <string name="txtTitle">Database Demo</string>
+    <string name="txtNextAct">Next Activity</string>
 </resources>

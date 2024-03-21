@@ -1,12 +1,14 @@
 package com.example.a3175_lec9_dbdemo.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.a3175_lec9_dbdemo.R;
 import com.example.a3175_lec9_dbdemo.adapters.StudentAdapter;
+import com.example.a3175_lec9_dbdemo.databases.CollegeDatabase;
 import com.example.a3175_lec9_dbdemo.databinding.ActivityMainBinding;
 import com.example.a3175_lec9_dbdemo.models.Student;
 
@@ -16,10 +18,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     List<Student> Students = new ArrayList<>();
+
+    CollegeDatabase cdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,25 @@ public class MainActivity extends AppCompatActivity {
         StudentAdapter studentAdapter = new StudentAdapter(Students);
 
         //set adapter on listview
-        binding.listViewStudents.setAdapter(studentAdapter);
+        //binding.listViewStudents.setAdapter(studentAdapter);
+
+        // database builder (the context, database class, name)
+        cdb = Room.databaseBuilder(getApplicationContext(), CollegeDatabase.class, "college.db").build();
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                cdb.StudentDao().insertStudentsFromList(Students);
+                List<Student> StudentDB = cdb.StudentDao().GetAllStudents();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.listViewStudents.setAdapter(new StudentAdapter(StudentDB));
+                    }
+                });
+            }
+        });
     }
 
     private void ReadCSV(){

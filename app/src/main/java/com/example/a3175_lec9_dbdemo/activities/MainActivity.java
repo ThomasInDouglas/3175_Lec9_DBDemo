@@ -10,6 +10,7 @@ import com.example.a3175_lec9_dbdemo.R;
 import com.example.a3175_lec9_dbdemo.adapters.StudentAdapter;
 import com.example.a3175_lec9_dbdemo.databases.CollegeDatabase;
 import com.example.a3175_lec9_dbdemo.databinding.ActivityMainBinding;
+import com.example.a3175_lec9_dbdemo.models.Grade;
 import com.example.a3175_lec9_dbdemo.models.Student;
 
 import java.io.BufferedReader;
@@ -18,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(R.layout.activity_main);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        ReadCSV();
+        ReadStudentsCSV();
+        List<Grade> GradesList = ReadGrades();
         Log.d("DBDEMO",Students.size() + " Items");
+        Log.d("DBDEMO", GradesList.size() + " Grades");
         //set up adapter for listview
         StudentAdapter studentAdapter = new StudentAdapter(Students);
 
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                cdb.StudentDao().insertStudentsFromList(Students);
-                List<Student> StudentDB = cdb.StudentDao().GetAllStudents();
+                cdb.studentDao().insertStudentsFromList(Students);
+                List<Student> StudentDB = cdb.studentDao().GetAllStudents();
+                cdb.gradeDao().insertGradesFromList(GradesList);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -61,7 +64,34 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void ReadCSV(){
+    private List<Grade> ReadGrades(){
+        List<Grade> Grades = new ArrayList<>();
+        InputStream inputStream = getResources().openRawResource(R.raw.grades);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String gradeLine;
+        try {
+            if ((gradeLine = reader.readLine()) != null){
+                //process header line stored in gradeLine
+            }
+            while((gradeLine = reader.readLine()) != null){
+                String[] gradeFields = gradeLine.split(",");
+                double grade = Double.parseDouble(gradeFields[2]);
+                Grade eachGrade = new Grade(gradeFields[0], gradeFields[1], grade);
+                Grades.add(eachGrade);
+            }
+        } catch (IOException ex){
+            ex.printStackTrace();
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return Grades;
+    }
+
+    private void ReadStudentsCSV(){
         Students = new ArrayList<>();
         //reads students from students.csv
         InputStream inputStream = getResources().openRawResource(R.raw.students);

@@ -3,8 +3,13 @@ package com.example.a3175_lec9_dbdemo.models;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 
-@Entity(tableName="grades", primaryKeys = {"courseid", "studentid"})
+@Entity(tableName="grades", primaryKeys = {"courseid", "studentid"},
+        foreignKeys = @ForeignKey(entity = Student.class, /*parent class*/
+                parentColumns = "studentid", childColumns = "studentid",
+                onDelete = ForeignKey.CASCADE))
+
 public class Grade {
     @NonNull
     @ColumnInfo(name = "courseid")

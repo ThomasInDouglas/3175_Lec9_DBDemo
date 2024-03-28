@@ -3,8 +3,10 @@ package com.example.a3175_lec9_dbdemo.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.a3175_lec9_dbdemo.R;
 import com.example.a3175_lec9_dbdemo.adapters.StudentAdapter;
@@ -62,7 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        binding.btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, NextActivity.class));
+            }
+        });
     }
+
+
 
     private List<Grade> ReadGrades(){
         List<Grade> Grades = new ArrayList<>();

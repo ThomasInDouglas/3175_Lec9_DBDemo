@@ -20,6 +20,9 @@ public interface StudentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOneStudent(Student student);
 
-    @Query("SELECT * from students")
+    @Query("SELECT * FROM students")
     List<Student> GetAllStudents();
+
+    @Query("DELETE FROM students WHERE studentid=:StudId")
+    int deleteOneStudentWithId(String StudId);
 }

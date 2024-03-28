@@ -17,6 +17,12 @@ public interface GradeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertGradesFromList(List<Grade> grades);
 
-    @Query("Select * from grades")
+    @Query("Select * FROM grades")
     List<Grade> GetAllGrades();
+
+    @Query("UPDATE grades SET studgrade = studgrade * 1.1 WHERE studentid = :StudID")
+    int IncreaseGradeForOneStudent(String StudID);
+
+    @Query("UPDATE grades SET studGrade = studGrade * 1.1 WHERE studentid IN (:StudIds) AND courseid = :CourseId")
+    int IncreaseGradeForStudentsInCourse(List<String> StudIds, String CourseId);
 }
